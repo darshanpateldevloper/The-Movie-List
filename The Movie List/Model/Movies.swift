@@ -15,5 +15,9 @@ struct Movies: Identifiable, Decodable {
     var poster_path: String?
     var release_date: String?
     var runtime: Int?
+    var status: String?
     var title: String?
+    var original_language: String?
+    var budget: Int?
+    var revenue: Int?
 }

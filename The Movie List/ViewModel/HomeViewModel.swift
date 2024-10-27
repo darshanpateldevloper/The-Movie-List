@@ -10,7 +10,9 @@ import SwiftUI
 
 class HomeViewModel: ObservableObject {
     @Published var items: [Movies]?
-    
+    @Published var isLoading = false
+    @Published var canLoadMore = true
+    private var currentPage = 1
     //public var placeholders = Array(repeating: Movies(id: Int(UUID().uuidString), overview: nil, title: nil), count: 10)
     
     func fetchData(movieListType: MovieListType) {

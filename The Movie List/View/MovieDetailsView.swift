@@ -50,7 +50,6 @@ struct MovieDetailsView: View {
                             Text("\(viewModel.movie?.runtime ?? 0) min")
                                 .font(.system(size: 15))
                                 .foregroundColor(.gray)
-                                .redacted(reason: viewModel.movie?.runtime == nil ? .placeholder : .init())
                                 .padding(.horizontal)
                                 
                             HStack(spacing: 8) {
@@ -58,7 +57,6 @@ struct MovieDetailsView: View {
                                     Text(genre.name ?? "")
                                         .font(.system(size: 15))
                                         .foregroundColor(.gray)
-                                        .redacted(reason: genre.name == nil ? .placeholder : .init())
                                     
                                     Circle()
                                         .frame(width: 5, height: 5)
@@ -72,9 +70,50 @@ struct MovieDetailsView: View {
                         .background(LinearGradient(gradient: Gradient(colors: [Color(#colorLiteral(red: 0.124825187, green: 0.1294132769, blue: 0.1380611062, alpha: 1)), Color.clear]), startPoint: .bottom, endPoint: .top))
                     )
                 
+                VStack(alignment: .leading,spacing: 10) {
+                    VStack(alignment: .leading,spacing: 5) {
+                        Text("Release Date")
+                            .font(.system(size: 15))
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                        Text(viewModel.movie?.release_date ?? "")
+                            .font(.system(size: 15))
+                            .foregroundStyle(.gray)
+                    }
+                    
+                    VStack(alignment: .leading,spacing: 5) {
+                        Text("Status")
+                            .font(.system(size: 15))
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                        Text(viewModel.movie?.status ?? "")
+                            .font(.system(size: 15))
+                            .foregroundStyle(.gray)
+                    }
+                    
+                    VStack(alignment: .leading,spacing: 5) {
+                        Text("Budget")
+                            .font(.system(size: 15))
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                        Text("$ \(viewModel.movie?.budget ?? 0)")
+                            .font(.system(size: 15))
+                            .foregroundStyle(.gray)
+                    }
+                    
+                    VStack(alignment: .leading,spacing: 5) {
+                        Text("Revenue")
+                            .font(.system(size: 15))
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                        Text("$ \(viewModel.movie?.revenue ?? 0)")
+                            .font(.system(size: 15))
+                            .foregroundStyle(.gray)
+                    }
+                }
+                .padding()
                 Text(viewModel.movie?.overview ?? "")
                     .foregroundColor(.gray)
-                    .redacted(reason: viewModel.movie?.overview == nil ? .placeholder : .init())
                     .padding()
                 
                 Spacer()
