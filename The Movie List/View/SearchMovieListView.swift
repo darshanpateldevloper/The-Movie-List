@@ -1,14 +1,13 @@
 //
-//  ViewAllListView.swift
+//  SearchMovieListView.swift
 //  The Movie List
 //
-//  Created by Mayank Patel on 26/10/24.
+//  Created by Mayank Patel on 27/10/24.
 //
 
 import SwiftUI
 
-struct ViewAllListView: View {
-    
+struct SearchMovieListView: View {
     //MARK: - Class Variable
     
     @ObservedObject private var viewModel = HomeViewModel()
@@ -22,15 +21,22 @@ struct ViewAllListView: View {
         GridItem(.flexible())
     ]
     var orientation: String = "horizontal"
-    var movieListType: MovieListType
     @Environment(\.presentationMode) var presentation
-    var title: String
+    @State private var searchText: String = ""
+    
+    //MARK: - Custom Methods
+    
+    func searchMovies(for searchText: String) {
+        if !searchText.isEmpty {
+            self.viewModel.fetchData(isSearch: true, searchText: searchText)
+        }
+    }
     
     //MARK: - Body
     
     var body: some View {
         VStack {
-            
+
             ScrollView(.vertical, showsIndicators: false) {
                 
                 VStack(alignment: .leading) {
@@ -43,12 +49,14 @@ struct ViewAllListView: View {
                                 .foregroundColor(Color(.white))
                         })
                         
-                        Text(title)
+                        Text("Movies")
                             .font(.title2)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
                         Spacer()
                     }
+                    
+                    SearchBar(text: $searchText, onTextChanged: searchMovies)
                     
                     LazyVGrid(columns: self.orientation == "horizontal" ? flexibleHorizontalColumn : flexibleVerticalColumn, spacing: 8) {
                         ForEach(viewModel.items, id: \.id) { item in
@@ -58,7 +66,7 @@ struct ViewAllListView: View {
                                     MovieItemView(item: item, orientation: orientation)
                                         .onAppear() {
                                             if viewModel.hasReachedEnd(of: item) && !viewModel.isFetching {
-                                                self.viewModel.fetchNextItem(movieListType: movieListType)
+                                                self.viewModel.fetchNextItem(isSearch: true,searchText: searchText)
                                             }
                                         }
                                 })
@@ -69,7 +77,7 @@ struct ViewAllListView: View {
             .padding()
             .onAppear() {
                 if viewModel.page == 1 {
-                    viewModel.fetchData(movieListType: movieListType)
+                    viewModel.fetchData(isSearch: true,searchText: searchText)
                 }
             }
         }
@@ -80,5 +88,5 @@ struct ViewAllListView: View {
 }
 
 #Preview {
-    ViewAllListView(movieListType: .trending, title: "")
+    SearchMovieListView()
 }

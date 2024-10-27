@@ -16,6 +16,7 @@ struct MovieDetailsView: View {
     @Environment(\.presentationMode) var presentation
     
     var body: some View {
+        
         ScrollView(.vertical, showsIndicators: false, content: {
             VStack(alignment: .leading) {
                 WebImage(url: URL(string: "\(Constants.imagesBaseUrl)\(item.poster_path ?? "")"))

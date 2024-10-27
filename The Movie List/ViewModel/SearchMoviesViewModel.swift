@@ -1,19 +1,19 @@
 //
-//  MovieDetailsViewModel.swift
+//  SearchMoviesViewModel.swift
 //  The Movie List
 //
-//  Created by Mayank Patel on 26/10/24.
+//  Created by Mayank Patel on 27/10/24.
 //
 
 import Foundation
-import SwiftUI
 
-class MovieDetailsViewModel: ObservableObject {
+
+class SearchMoviesViewModel: ObservableObject {
     @Published var movie: Movies?
     
-    func fetchData(id: Int) {
+    func fetchData(queryString: String) {
         
-        guard let url = URL(string: "\(Constants.baseURl)/movie/\(id)?language=en-US") else {return}
+        guard let url = URL(string: "\(Constants.baseURl)/search/multi?query=\(queryString)&include_adult=false&language=en-US&page=1") else {return}
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -26,8 +26,6 @@ class MovieDetailsViewModel: ObservableObject {
             
             do {
                 let result: Movies = try JSONDecoder().decode(Movies.self, from: data)
-                debugPrint(url)
-                debugPrint(result)
                 DispatchQueue.main.async {
                     self.movie = result
                 }
@@ -48,3 +46,4 @@ class MovieDetailsViewModel: ObservableObject {
         }.resume()
     }
 }
+

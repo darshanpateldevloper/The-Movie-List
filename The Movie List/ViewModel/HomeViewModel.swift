@@ -22,12 +22,13 @@ class HomeViewModel: ObservableObject {
     var isFetching: Bool {
         viewState == .fetching
     }
+
     
     func hasReachedEnd(of item: Movies) -> Bool {
         items.last?.id == item.id
     }
     
-    func fetchNextItem(movieListType: MovieListType) {
+    func fetchNextItem(movieListType: MovieListType = .trending,isSearch: Bool = false,searchText: String = "") {
         guard page != totalPages else { return }
         
         viewState = .fetching
@@ -35,17 +36,19 @@ class HomeViewModel: ObservableObject {
         
         page += 1
         
-        self.fetchData(movieListType: movieListType)
+        self.fetchData(movieListType: movieListType,isSearch: isSearch,searchText: searchText)
     }
     
-    func fetchData(movieListType: MovieListType) {
+    func fetchData(movieListType: MovieListType = .trending,isSearch: Bool = false,searchText: String = "") {
         self.reset()
         self.viewState = .loading
         defer { self.viewState = .finished }
         
         guard let url = URL(string: "\(Constants.baseURl)/movie/\(movieListType.rawValue)?language=en-US&page=\(page)") else {return}
         
-        var request = URLRequest(url: url)
+        guard let searchUrl = URL(string: "\(Constants.baseURl)/search/movie?query=\(searchText)&include_adult=false&language=en-US&page=\(page)") else {return}
+        
+        var request = URLRequest(url: isSearch ? searchUrl : url)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "accept")
         request.setValue(Constants.headerToken, forHTTPHeaderField: "Authorization")
@@ -55,9 +58,9 @@ class HomeViewModel: ObservableObject {
             
             do {
                 let result: ResultResponse = try JSONDecoder().decode(ResultResponse.self, from: data)
-                //self.page += 1
-                debugPrint(url)
-                debugPrint(result.results ?? [])
+    
+                debugPrint(isSearch ? searchUrl : url)
+                debugPrint(result)
                 DispatchQueue.main.async {
                     self.items.append(contentsOf: result.results ?? [])
                     self.totalPages = result.totalPages ?? 0

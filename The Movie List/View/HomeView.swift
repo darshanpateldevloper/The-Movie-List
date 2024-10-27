@@ -13,6 +13,24 @@ struct HomeView: View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: false, content: {
                 VStack {
+                    HStack() {
+                        Text("Movies")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundStyle(.white)
+                        Spacer()
+                        
+                        NavigationLink(destination: SearchMovieListView(), label: {
+                            Image("icSearch")
+                                .resizable()
+                                .frame(width: 30,height: 30)
+                        })
+                    }
+                    .padding()
+                    Divider()
+                        .frame(height: 1)
+                        .background(.white)
+                    
                     MoviesListView(title: "Trending", movieListType: MovieListType.trending)
                     
                     MoviesListView(title: "Popular", movieListType: MovieListType.popular,orientation: "vertical")

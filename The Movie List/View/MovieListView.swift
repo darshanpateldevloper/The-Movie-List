@@ -35,7 +35,7 @@ struct MoviesListView: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    ForEach(viewModel.items ?? [], id: \.id) { item in
+                    ForEach(viewModel.items, id: \.id) { item in
                         NavigationLink(
                             destination: MovieDetailsView(item: item),
                             label: {
@@ -63,6 +63,7 @@ struct MovieItemView: View {
                 .resizable()
                 .scaledToFill()
                 .frame(width: orientation == "horizontal" ? (UIScreen.main.bounds.width / 2) - 20 : UIScreen.main.bounds.width / 3 - 20, height: orientation == "horizontal" ? 120 : 180)
+                .background(.gray)
                 .redacted(reason: item.poster_path == nil ? .placeholder : .init())
                 .cornerRadius(8)
             
