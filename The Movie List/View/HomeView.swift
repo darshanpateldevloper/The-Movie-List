@@ -9,6 +9,28 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct HomeView: View {
+    
+    @StateObject private var viewModel = CategoryViewModel()
+    
+    //MARK: - Custome Methods
+    
+    private func getTitle(string: String) -> MovieListType {
+        switch string {
+        case "Trending":
+            return .trending
+        case "Popular":
+            return .popular
+        case "Top Rated":
+            return .topRated
+        case "Upcoming":
+            return .upcoming
+        default:
+            return .trending
+        }
+    }
+    
+    //MARK: - Body
+    
     var body: some View {
         NavigationView {
             ScrollView(.vertical, showsIndicators: false, content: {
@@ -30,14 +52,9 @@ struct HomeView: View {
                     Divider()
                         .frame(height: 1)
                         .background(.white)
-                    
-                    MoviesListView(title: "Trending", movieListType: MovieListType.trending)
-                    
-                    MoviesListView(title: "Popular", movieListType: MovieListType.popular,orientation: "vertical")
-                    
-                    MoviesListView(title: "Upcoming", movieListType: MovieListType.upcoming,orientation: "vertical")
-                    
-                    MoviesListView(title: "Top rated", movieListType: MovieListType.topRated,orientation: "vertical")
+                    ForEach(viewModel.items, id: \.id) { item in
+                        MoviesListView(title: item.title ?? "", movieListType: self.getTitle(string: item.title ?? ""), item: item.items,orientation: item.title == "Trending" ? "horizontal" : "Vertical")
+                    }
                     
                 }
                 .padding(.bottom, UIApplication.shared.windows.first?.safeAreaInsets.bottom)
@@ -45,6 +62,17 @@ struct HomeView: View {
             .background(Color("background"))
             .navigationBarHidden(true)
            
+        }
+        .onAppear() {
+            viewModel.fetchData(movieListType: .trending, completion: {_ in
+                viewModel.fetchData(movieListType: .popular, completion: {_ in 
+                    viewModel.fetchData(movieListType: .upcoming, completion: {_ in 
+                        viewModel.fetchData(movieListType: .topRated, completion: {_ in 
+                            
+                        })
+                    })
+                })
+            })
         }
     }
 }

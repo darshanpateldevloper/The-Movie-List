@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ViewAllListView: View {
     
-    //MARK: - Class Variable
+    //MARK: - Variable
     
     @ObservedObject private var viewModel = HomeViewModel()
     private let flexibleVerticalColumn = [
@@ -30,7 +30,6 @@ struct ViewAllListView: View {
     
     var body: some View {
         VStack {
-            
             ScrollView(.vertical, showsIndicators: false) {
                 
                 VStack(alignment: .leading) {
@@ -53,7 +52,7 @@ struct ViewAllListView: View {
                     LazyVGrid(columns: self.orientation == "horizontal" ? flexibleHorizontalColumn : flexibleVerticalColumn, spacing: 8) {
                         ForEach(viewModel.items, id: \.id) { item in
                             NavigationLink(
-                                destination: MovieDetailsView(item: item),
+                                destination: MovieDetailsView(id: item.id ?? 0),
                                 label: {
                                     MovieItemView(item: item, orientation: orientation)
                                         .onAppear() {
@@ -67,13 +66,12 @@ struct ViewAllListView: View {
                 }
             }
             .padding()
-            .onAppear() {
-                if viewModel.page == 1 {
-                    viewModel.fetchData(movieListType: movieListType)
-                }
+        }
+        .onAppear() {
+            if viewModel.page == 1 {
+                viewModel.fetchData(movieListType: movieListType)
             }
         }
-            
         .background(Color("background"))
         .navigationBarHidden(true)
     }

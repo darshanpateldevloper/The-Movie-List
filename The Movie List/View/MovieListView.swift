@@ -13,6 +13,7 @@ struct MoviesListView: View {
     
     var title: String
     var movieListType: MovieListType
+    var item: [Movies]
     
     var orientation: String = "horizontal"
     
@@ -35,9 +36,9 @@ struct MoviesListView: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    ForEach(viewModel.items, id: \.id) { item in
+                    ForEach(self.item, id: \.id) { item in
                         NavigationLink(
-                            destination: MovieDetailsView(item: item),
+                            destination: MovieDetailsView(id: item.id ?? 0),
                             label: {
                                 MovieItemView(item: item, orientation: orientation)
                             })
@@ -48,7 +49,7 @@ struct MoviesListView: View {
             Spacer()
         }
         .onAppear() {
-            viewModel.fetchData(movieListType: movieListType)
+            //viewModel.fetchData(movieListType: movieListType)
         }
     }
 }
@@ -92,7 +93,7 @@ struct MovieItemView: View {
 
 struct MoviesListView_Previews: PreviewProvider {
     static var previews: some View {
-        MoviesListView(title: "TITLE", movieListType: MovieListType.trending)
+        MoviesListView(title: "TITLE", movieListType: MovieListType.trending,item: [])
     }
 }
 

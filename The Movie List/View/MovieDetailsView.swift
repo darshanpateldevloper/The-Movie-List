@@ -9,17 +9,19 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct MovieDetailsView: View {
-    var item: Movies
     
-    @ObservedObject private var viewModel = MovieDetailsViewModel()
+    //MARK: - Variable
     
+    var id: Int = 0
+    @StateObject private var viewModel = MovieDetailsViewModel()
     @Environment(\.presentationMode) var presentation
     
+    //MARK: - Body
     var body: some View {
         
         ScrollView(.vertical, showsIndicators: false, content: {
             VStack(alignment: .leading) {
-                WebImage(url: URL(string: "\(Constants.imagesBaseUrl)\(item.poster_path ?? "")"))
+                WebImage(url: URL(string: "\(Constants.imagesBaseUrl)\(viewModel.movie?.poster_path ?? "")"))
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height / 2)
@@ -34,7 +36,6 @@ struct MovieDetailsView: View {
                                         .font(.system(size: 32))
                                         .foregroundColor(Color(.white))
                                 })
-                                
                                 Spacer()
                             }
                             .padding(.horizontal)
@@ -42,7 +43,7 @@ struct MovieDetailsView: View {
                             
                             Spacer()
                             
-                            Text(item.title ?? "")
+                            Text(viewModel.movie?.title ?? "")
                                 .font(.title)
                                 .fontWeight(.bold)
                                 .foregroundColor(.white)
@@ -54,7 +55,7 @@ struct MovieDetailsView: View {
                                 .padding(.horizontal)
                                 
                             HStack(spacing: 8) {
-                                ForEach(viewModel.movie?.genres ?? [Genre(id: 0, name: nil)], id: \.id) { genre in
+                                ForEach(viewModel.movie?.genres ?? [], id: \.id) { genre in
                                     Text(genre.name ?? "")
                                         .font(.system(size: 15))
                                         .foregroundColor(.gray)
@@ -125,14 +126,15 @@ struct MovieDetailsView: View {
         .background(Color("background"))
         .ignoresSafeArea(.all, edges: .all)
         .onAppear {
-            viewModel.fetchData(id: item.id!)
+            print("id", id)
+            viewModel.fetchData(id: id)
         }
     }
 }
 
 struct MovieDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        MovieDetailsView(item: Movies(backdrop_path: "/fCayJrkfRaCRCTh8GqN30f8oyQF.jpg", id: 0, overview: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi auctor ligula dui, sit amet fermentum enim varius sed. Cras ultrices sodales ullamcorper. Nulla accumsan laoreet est in malesuada. Ut elementum condimentum rutrum. Pellentesque in mi in lorem congue placerat id euismod nisi. Donec at lacus sem. Curabitur tristique, mi in tincidunt sagittis, felis nisl tempor arcu, sit amet commodo arcu leo a nulla. Vivamus blandit diam sit amet nulla feugiat, at ultricies turpis mollis. Curabitur eleifend pulvinar ultricies. Interdum et malesuada fames ac ante ipsum primis in faucibus. Phasellus at sapien eros. Nunc vel facilisis neque.", poster_path: "/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg", release_date: "21-10-85", title: "The Awesome Movie"))
+        MovieDetailsView()
     }
 }
 
