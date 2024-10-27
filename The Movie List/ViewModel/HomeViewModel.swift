@@ -9,14 +9,41 @@ import Foundation
 import SwiftUI
 
 class HomeViewModel: ObservableObject {
-    @Published var items: [Movies]?
-    @Published var isLoading = false
-    @Published var canLoadMore = true
-    private var currentPage = 1
+    @Published var items: [Movies] = []
+    private(set) var page = 1
+    private(set) var totalPages: Int?
+    @Published private(set) var viewState: ViewState?
     //public var placeholders = Array(repeating: Movies(id: Int(UUID().uuidString), overview: nil, title: nil), count: 10)
     
+    var isLoading: Bool {
+        viewState == .loading
+    }
+    
+    var isFetching: Bool {
+        viewState == .fetching
+    }
+    
+    func hasReachedEnd(of item: Movies) -> Bool {
+        items.last?.id == item.id
+    }
+    
+    func fetchNextItem(movieListType: MovieListType) {
+        guard page != totalPages else { return }
+        
+        viewState = .fetching
+        defer { viewState = .finished }
+        
+        page += 1
+        
+        self.fetchData(movieListType: movieListType)
+    }
+    
     func fetchData(movieListType: MovieListType) {
-        guard let url = URL(string: "\(Constants.baseURl)/movie/\(movieListType.rawValue)?language=en-US&page=1") else {return}
+        self.reset()
+        self.viewState = .loading
+        defer { self.viewState = .finished }
+        
+        guard let url = URL(string: "\(Constants.baseURl)/movie/\(movieListType.rawValue)?language=en-US&page=\(page)") else {return}
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -28,8 +55,12 @@ class HomeViewModel: ObservableObject {
             
             do {
                 let result: ResultResponse = try JSONDecoder().decode(ResultResponse.self, from: data)
+                //self.page += 1
+                debugPrint(url)
+                debugPrint(result.results ?? [])
                 DispatchQueue.main.async {
-                    self.items = result.results
+                    self.items.append(contentsOf: result.results ?? [])
+                    self.totalPages = result.totalPages ?? 0
                 }
             } catch {
                 print(error)
@@ -55,4 +86,23 @@ enum MovieListType: String {
     case popular  = "popular"
     case upcoming = "upcoming"
     case topRated = "top_rated"
+}
+
+extension HomeViewModel {
+    enum ViewState {
+        case fetching
+        case loading
+        case finished
+    }
+}
+
+private extension HomeViewModel {
+    func reset() {
+        if viewState == .finished {
+            items.removeAll()
+            page = 1
+            totalPages = nil
+            viewState = nil
+        }
+    }
 }

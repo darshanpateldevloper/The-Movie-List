@@ -29,7 +29,7 @@ struct ViewAllListView: View {
     //MARK: - Body
     
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false, content: {
+        ScrollView(.vertical, showsIndicators: false) {
             
             VStack(alignment: .leading) {
                 HStack(spacing: 10) {
@@ -49,16 +49,21 @@ struct ViewAllListView: View {
                 }
                 
                 LazyVGrid(columns: self.orientation == "horizontal" ? flexibleHorizontalColumn : flexibleVerticalColumn, spacing: 8) {
-                    ForEach(viewModel.items ?? [], id: \.id) { item in
+                    ForEach(viewModel.items, id: \.id) { item in
                         NavigationLink(
                             destination: MovieDetailsView(item: item),
                             label: {
                                 MovieItemView(item: item, orientation: orientation)
+                                    .onAppear() {
+                                        if viewModel.hasReachedEnd(of: item) && !viewModel.isFetching {
+                                            self.viewModel.fetchNextItem(movieListType: movieListType)
+                                        }
+                                    }
                             })
                     }
                 }
             }
-        })
+        }
         .padding()
         .onAppear() {
             viewModel.fetchData(movieListType: movieListType)
